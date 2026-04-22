@@ -4,11 +4,11 @@
     <h1 class="mb-4">📅 Calendrier des compétitions</h1>
 
     {{-- Filtre par sport --}}
-    <form methode="GET" action="/calendrier" class="mb-4">
+    <form method="GET" action="/calendrier" class="mb-4">
         <div class="row g-2 align-items-center">
             <div class="col-auto">
                 <select name="sport_id" class="form-select">
-                    <option value="">-- Tous les sports --</option>
+                    <option value=""> Tous les sports </option>
                     @foreach($sports as $sport)
                         <option value="{{ $sport->id }}" {{ request('sport_id') == $sport->id ? 'selected' : '' }}>
                             {{ $sport->nom }}
@@ -24,36 +24,53 @@
             </div>
         </div>
     </form>
-
-    {{-- Affichage par jour --}}
-    @forelse($tours as $date => $toursduJour)
-        <div class="card mb-4">
-            <div class="card-header bg-primary text-white fw-bold">
-                📆 {{ \Carbon\Carbon::parse($date)->translatedFormat('l d F Y') }}
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    @foreach($toursduJour as $tour)
-                        <div class="col-md-4 mb-3">
-                            <div class="card h-100 shadow-sm">
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $tour->sport->nom }}</h5>
-                                    <span class="badge {{ $tour->type == 'finale' ? 'bg-danger' : 'bg-warning text-dark' }} mb-2">
-                                        {{ ucfirst($tour->type) }}
-                                    </span>
-                                    <p class="card-text">
-                                        📍 {{ $tour->lieu->nom }}<br>
-                                        🕐 {{ $tour->heure_debut }} - {{ $tour->heure_fin }}<br>
-                                        💶 {{ $tour->prix }}€
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
+    {{-- Tableau planning --}}
+    <div class="table-responsive">
+        <table class="table table-bordered text-center align-middle">
+            <thead class="table-primary">
+                <tr>
+                    <th>📅 Date</th>
+                    @foreach($sports as $sport)
+                        <th>{{ $sport->nom }}</th>
                     @endforeach
-                </div>
-            </div>
-        </div>
-    @empty
-        <div class="alert alert-info">Aucune compétion trouvée.</div>
-    @endforelse
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($tours as $date => $toursduJour)
+                    <tr>
+                        <td class="fw-bold">
+                            {{ \Carbon\Carbon::parse($date)->translatedFormat('l d F Y') }}
+                        </td>
+                        @foreach($sports as $sport)
+                            <td>
+                                {{-- On cherche si ce sport a un tour ce jour là --}}
+                                @php
+                                    $tour = $toursduJour->firstWhere('sport_id', $sport->id);
+                                @endphp
+
+                                @if($tour)
+                                    <span class="badge {{ $tour->type == 'finale' ? 'bg-danger' : 'bg-warning text-dark' }}">
+                                        {{ ucfirst($tour->type) }}
+                                    </span><br>
+                                    <small>📍 {{ $tour->lieu->nom }}</small><br>
+                                    <small>🕐 {{ $tour->heure_debut }}</small><br>
+                                    <small>💶 {{ $tour->prix }}€</small>
+                                @else
+                                    <span class="text-muted">—</span>
+                                @endif
+                            </td>
+                        @endforeach
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="{{ $sports->count() + 1 }}" class="text-center">
+                            <div class="alert alert-info mb-0">Aucune compétition trouvée.</div>
+                        </td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+
+    
 @endsection

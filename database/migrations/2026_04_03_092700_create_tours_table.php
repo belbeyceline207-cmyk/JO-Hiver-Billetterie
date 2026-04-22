@@ -17,7 +17,6 @@ return new class extends Migration
             $table->foreignId('lieu_id')->constrained()->onDelete('cascade');
             $table->enum('type',['qualifications','finale']);
             $table->date('date');
-            $table->time('time');
             $table->time('heure_debut');
             $table->time('heure_fin');
             $table->decimal('prix',8,2);

@@ -6,5 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lieu extends Model
 {
-    //
+    public function tours() {
+        return $this->hasMany(Tour::class);
+    }
 }

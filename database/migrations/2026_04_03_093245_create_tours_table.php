@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('tours', function (Blueprint $table) {
             $table->id();
-            $table->foreingId('sport_id')->constrained()->onDelete('cascade');
-            $table->foreingId('lieu_id')->constrained()->onDelete('cascade');
+            $table->foreignId('sport_id')->constrained()->onDelete('cascade');
+            $table->foreignId('lieu_id')->constrained()->onDelete('cascade');
             $table->enum('type',['qualifications','finale']);
             $table->date('date');
             $table->time('time');

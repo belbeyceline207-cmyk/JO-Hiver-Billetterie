@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('reservations', function (Blueprint $table) {
             $table->id();
-            $table->foreingId('spectateur_id')->constained()->onDelete('cascade');
-            $table->foreingId('tour_id')->constained()->onDelete('cascade');
+            $table->foreignId('spectateur_id')->constrained()->onDelete('cascade');
+            $table->foreignId('tour_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

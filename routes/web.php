@@ -7,6 +7,8 @@ use App\Http\Controllers\PanierController;
 use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\OrganisateurController;
+use App\Http\Controllers\HomeController;
+
 
 
 Route::get('/', function () {
@@ -40,3 +42,5 @@ Route::middleware('auth')->prefix('organisateur')->group(function () {
     Route::put('/competitions/{id}', [OrganisateurController::class, 'update']);
     Route::delete('/competitions/{id}', [OrganisateurController::class, 'destroy']);
 });
+
+Route::get('/', [HomeController::class, 'index']);

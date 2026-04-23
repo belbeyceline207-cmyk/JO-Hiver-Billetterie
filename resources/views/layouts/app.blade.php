@@ -79,6 +79,19 @@
         @yield('content')
     </div>
 
+    <!-- Icône panier flottante -->
+    <a href="/panier" class="position-fixed bottom-0 end-0 m-4" style="z-index: 9999; text-decoration: none;">
+        <div class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center shadow-lg"
+            style="width: 60px; height: 60px; font-size: 1.5rem;">
+            🛒
+            @if(session('panier') && count(session('panier')) > 0)
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ count(session('panier')) }}
+                </span>
+            @endif
+        </div>
+    </a>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -41,9 +41,14 @@
                         </p>
                     </div>
                     <div class="card-footer">
-                        <a href="/billetterie/{{ $tour->id }}/reserver" class=" btn btn-success w-100">
-                            🛒 Réserver
-                        </a>
+                        <form method="POST" action="/panier/ajouter">
+                            @csrf
+                            <input type="hidden" name="tour_id" value="{{ $tour->id }}">
+                            <div class="d-flex gap-2">
+                                <input type="number" name="quantite" value="1" min="1" max="10" class="form-control w-25">
+                                <button type="submit" class="btn btn-success w-75">🛒 Ajouter au panier</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

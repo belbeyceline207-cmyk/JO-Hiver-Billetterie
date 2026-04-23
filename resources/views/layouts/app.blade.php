@@ -5,6 +5,50 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JO Hiver 2026</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+    :root {
+        --jo-bleu: #0057A8;
+        --jo-vert: #00A651;
+        --jo-blanc: #FFFFFF;
+        --jo-nuit: #1A1A2E;
+    }
+
+    body {
+        background-color: #F0F4F8;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .navbar {
+        background: linear-gradient(135deg, #0057A8, #1A1A2E) !important;
+        border-bottom: 3px solid #00A651;
+    }
+
+    .navbar-brand {
+        font-weight: 800;
+        letter-spacing: 1px;
+        color: white !important;
+    }
+
+    .card-header.bg-primary {
+        background: linear-gradient(135deg, #0057A8, #1A1A2E) !important;
+    }
+
+    .btn-primary {
+        background-color: #0057A8 !important;
+        border-color: #0057A8 !important;
+    }
+
+    .btn-success {
+        background-color: #00A651 !important;
+        border-color: #00A651 !important;
+    }
+
+    .table-primary {
+        background: linear-gradient(135deg, #0057A8, #1A1A2E) !important;
+        color: white !important;
+    }
+</style>
 </head>
 <body>
     <!-- bar de navigation -->

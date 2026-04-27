@@ -38,9 +38,13 @@ Route::middleware('auth')->prefix('organisateur')->group(function () {
 
 Route::middleware('auth')->prefix('organisateur')->group(function () {
     Route::get('/', [OrganisateurController::class, 'index']);
+    Route::get('/competitions', [OrganisateurController::class, 'createForm']);
     Route::post('/competitions', [OrganisateurController::class, 'store']);
+    Route::get('/competitions/liste', [OrganisateurController::class, 'liste']);
     Route::put('/competitions/{id}', [OrganisateurController::class, 'update']);
     Route::delete('/competitions/{id}', [OrganisateurController::class, 'destroy']);
+    Route::get('/reservations', [OrganisateurController::class, 'reservations']);
+    Route::get('/stats', [OrganisateurController::class, 'stats']);
 });
 
 Route::get('/', [HomeController::class, 'index']);

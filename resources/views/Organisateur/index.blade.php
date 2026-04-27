@@ -49,5 +49,12 @@
                 <p style="color: #a0aec0; font-size: 0.85rem;">Spectateurs et places disponibles</p>
             </a>
         </div>
+        {{-- Bouton déconnexion --}}
+        <div class="text-end mt-4">
+            <form method="POST" action="/logout">
+                @csrf
+                <button type="submit" class="btn btn-danger">🚪 Déconnexion</button>
+            </form>
+        </div>
     </div>
 @endsection

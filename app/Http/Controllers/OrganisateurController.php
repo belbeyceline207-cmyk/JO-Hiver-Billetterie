@@ -10,13 +10,13 @@ use App\Models\Reservation;
 
 class OrganisateurController extends Controller
 {
-    // Dashboard
+    // Afficher le dashboard organisateur
     public function index()
     {
         return view('organisateur.index');
     }
 
-    // Formulaire ajouter
+    // Affiche le formulaire d'ajout de compétition
     public function createForm()
     {
         $sports = Sport::all();
@@ -24,79 +24,87 @@ class OrganisateurController extends Controller
         return view('organisateur.create', compact('sports', 'lieux'));
     }
 
-    // Ajouter une compétition
+    // Enregistrer une nouvelle compétition en base
     public function store(Request $request)
     {
+        // Vérifier que tous les champs sont bien remplis
         $request->validate([
-            'sport_id'    => 'required|exists:sports,id',
-            'lieu_id'     => 'required|exists:lieux,id',
-            'type'        => 'required|in:qualifications,finale',
-            'date'        => 'required|date',
+            'sport_id'    => 'required',
+            'lieu_id'     => 'required',
+            'type'        => 'required',
+            'date'        => 'required',
             'heure_debut' => 'required',
             'heure_fin'   => 'required',
-            'prix'        => 'required|numeric|min:0',
+            'prix'        => 'required',
         ]);
 
+        // Créer le tour en base avec les données du formulaire
         Tour::create($request->all());
-        return redirect('/organisateur')->with('success', '✅ Compétition ajoutée !');
+        return redirect('/organisateur')->with('success', 'Compétition ajoutée !');
     }
 
-    // Liste des compétitions
+    // Afficher la liste de toutes les compétitions
     public function liste()
     {
-        $tours = Tour::with(['sport', 'lieu'])
-            ->withCount('reservations')
-            ->get()
-            ->map(function($tour) {
-                $tour->places_disponibles = $tour->lieu->capacite - $tour->reservations_count;
-                return $tour;
-            });
+        // Récupèrer les tours avec le nombre de réservations
+        $tours = Tour::with(['sport', 'lieu'])->withCount('reservations')->get();
+
+        // Calculer les places disponibles pour chaque tour
+        foreach ($tours as $tour) {
+            $tour->places_disponibles = $tour->lieu->capacite - $tour->reservations_count;
+        }
+
         $sports = Sport::all();
         $lieux = Lieu::all();
         return view('organisateur.liste', compact('tours', 'sports', 'lieux'));
     }
 
-    // Modifier
+    // la mise à jour d'une compétition existante
     public function update(Request $request, $id)
     {
+        // Vérifier que tous les champs sont remplis
         $request->validate([
-            'sport_id'    => 'required|exists:sports,id',
-            'lieu_id'     => 'required|exists:lieux,id',
-            'type'        => 'required|in:qualifications,finale',
-            'date'        => 'required|date',
+            'sport_id'    => 'required',
+            'lieu_id'     => 'required',
+            'type'        => 'required',
+            'date'        => 'required',
             'heure_debut' => 'required',
             'heure_fin'   => 'required',
-            'prix'        => 'required|numeric|min:0',
+            'prix'        => 'required',
         ]);
 
+        // Trouve le tour par son id et met à jour ses données
         Tour::findOrFail($id)->update($request->all());
-        return redirect('/organisateur/competitions/liste')->with('success', '✅ Compétition modifiée !');
+        return redirect('/organisateur/competitions/liste')->with('success', 'Compétition modifiée !');
     }
 
-    // Supprimer
+    // Supprimer une compétition
     public function destroy($id)
     {
+        // Trouver le tour par son id et le supprime
         Tour::findOrFail($id)->delete();
-        return redirect('/organisateur/competitions/liste')->with('success', '🗑️ Compétition supprimée !');
+        return redirect('/organisateur/competitions/liste')->with('success', 'Compétition supprimée !');
     }
 
-    // Réservations
+    // Afficher toutes les réservations
     public function reservations()
     {
+        // Récupèrer les réservations avec les infos du spectateur et du tour
         $reservations = Reservation::with(['spectateur', 'tour.sport', 'tour.lieu'])->get();
         return view('organisateur.reservations', compact('reservations'));
     }
 
-    // Stats
+    // Afficher les statistiques
     public function stats()
     {
-        $tours = Tour::with(['sport', 'lieu'])
-            ->withCount('reservations')
-            ->get()
-            ->map(function($tour) {
-                $tour->places_disponibles = $tour->lieu->capacite - $tour->reservations_count;
-                return $tour;
-            });
+        // Récupèrer les tours avec le nombre de réservations
+        $tours = Tour::with(['sport', 'lieu'])->withCount('reservations')->get();
+
+        // Calculer les places disponibles pour chaque tour
+        foreach ($tours as $tour) {
+            $tour->places_disponibles = $tour->lieu->capacite - $tour->reservations_count;
+        }
+
         return view('organisateur.stats', compact('tours'));
     }
 }

@@ -1,26 +1,33 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1 class="mb-4">🛒 Mon panier</h1>
 
-    {{-- Message de succés --}}
+    {{-- Bannière en haut de page --}}
+    <div style="background-color: #006d6d; padding: 40px; margin: -30px -12px 30px; text-align: center;">
+        <h1 style="color: white; border: none; padding: 0; letter-spacing: 2px;">
+            <i class="bi bi-cart3"></i> Mon panier
+        </h1>
+    </div>
+
+    {{-- Message de succès après ajout ou suppression --}}
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success')}}</div>
+        <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
+    {{-- Si le panier contient au moins un article --}}
     @if(count($tours) > 0)
         <div class="card shadow-sm mb-4">
             <div class="card-body">
                 <table class="table align-middle">
                     <thead class="table-dark">
                         <tr>
-                            <th>Sport</th>
-                            <th>Type</th>
-                            <th>Date</th>
-                            <th>Lieu</th>
-                            <th>Prix unitaire</th>
-                            <th>Quantité</th>
-                            <th>Sous-total</th>
+                            <th><i class="bi bi-trophy"></i> Sport</th>
+                            <th><i class="bi bi-flag"></i> Type</th>
+                            <th><i class="bi bi-calendar3"></i> Date</th>
+                            <th><i class="bi bi-geo-alt"></i> Lieu</th>
+                            <th><i class="bi bi-tag"></i> Prix unitaire</th>
+                            <th><i class="bi bi-hash"></i> Quantité</th>
+                            <th><i class="bi bi-receipt"></i> Sous-total</th>
                             <th>Action</th>
                         </tr>
                     </thead>
@@ -29,6 +36,7 @@
                             <tr>
                                 <td><strong>{{ $item['tour']->sport->nom }}</strong></td>
                                 <td>
+                                    {{-- Badge rouge pour finale, jaune pour qualifications --}}
                                     <span class="badge {{ $item['tour']->type == 'finale' ? 'bg-danger' : 'bg-warning text-dark' }}">
                                         {{ ucfirst($item['tour']->type) }}
                                     </span>
@@ -37,12 +45,16 @@
                                 <td>{{ $item['tour']->lieu->nom }}</td>
                                 <td>{{ $item['tour']->prix }}€</td>
                                 <td>{{ $item['quantite'] }}</td>
+                                {{-- Sous-total = prix x quantité --}}
                                 <td><strong>{{ $item['tour']->prix * $item['quantite'] }}€</strong></td>
                                 <td>
+                                    {{-- Formulaire de suppression d'un billet --}}
                                     <form method="POST" action="/panier/supprimer/{{ $tour_id }}">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">🗑️</button>
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </form>
                                 </td>
                             </tr>
@@ -52,23 +64,30 @@
             </div>
         </div>
 
-        {{-- Total et actions --}}
+        {{-- Total et boutons d'action --}}
         <div class="d-flex justify-content-between align-items-center">
+
+            {{-- Bouton pour vider tout le panier --}}
             <form method="POST" action="/panier/vider">
                 @csrf
-                <button type="submit" class="btn btn-secondary">🗑️ Vider le panier</button>
+                <button type="submit" class="btn btn-secondary">
+                    <i class="bi bi-trash"></i> Vider le panier
+                </button>
             </form>
+
             <div class="text-end">
-                <h4>Total : <strong class="text-success">{{ $total }}€</strong></h4>
+                {{-- Total général de la commande --}}
+                <h4>Total : <strong style="color: #006d6d;">{{ $total }}€</strong></h4>
                 <a href="/billetterie/reserver" class="btn btn-success btn-lg">
-                    ✅ Confirmer la réservation
+                    <i class="bi bi-check-circle"></i> Confirmer la réservation
                 </a>
             </div>
         </div>
 
     @else
+        {{-- Message si le panier est vide --}}
         <div class="alert alert-info">
-            Votre panier est vide. 
+            <i class="bi bi-cart-x"></i> Votre panier est vide.
             <a href="/billetterie">Retour à la billetterie</a>
         </div>
     @endif

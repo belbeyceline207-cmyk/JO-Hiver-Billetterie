@@ -12,12 +12,15 @@ class ReservationController extends Controller
     // Afficher le formulaire de réservation
     public function index()
     {
+        // Récupèrer le panier en session
         $panier = session()->get('panier', []);
 
+        // Si le panier est vide, on redirige vers la billetterie
         if (empty($panier)) {
             return redirect('/billetterie')->with('error', 'Votre panier est vide !');
         }
 
+        // Récupère les infos de chaque tour du panier
         $tours = [];
         foreach ($panier as $tour_id => $item) {
             $tours[$tour_id] = [
@@ -29,26 +32,26 @@ class ReservationController extends Controller
         return view('reservation.index', compact('tours'));
     }
 
-    // Enregistrer la réservation
+    // Enregistrer la réservation en base de données
     public function confirmer(Request $request)
     {
-        // Validation
+        // Vérifier que les champs obligatoires sont remplis
         $request->validate([
-            'prenom'              => 'required|string|max:255',
-            'nom'                 => 'required|string|max:255',
-            'email'               => 'required|email',
-            'telephone'           => 'required|string',
-            'personnes'           => 'required|array',
-            'personnes.*.prenom'  => 'required|string',
-            'personnes.*.nom'     => 'required|string',
-            'personnes.*.tour_id' => 'required|exists:tours,id',
+            'prenom'    => 'required',
+            'nom'       => 'required',
+            'email'     => 'required|email',
+            'telephone' => 'required',
+            'personnes' => 'required|array',
         ]);
 
-        // Stocker les réservations pour le récap
+
         $reservations = [];
 
-        // Pour chaque personne → créer spectateur + réservation
+        // Pour chaque billet on crée un spectateur et une réservation
         foreach ($request->personnes as $personne) {
+
+            // Créer le spectateur avec les infos saisies
+            // Email et téléphone sont identiques pour tous les billets de la commande
             $spectateur = Spectateur::create([
                 'prenom'    => $personne['prenom'],
                 'nom'       => $personne['nom'],
@@ -56,24 +59,25 @@ class ReservationController extends Controller
                 'telephone' => $request->telephone,
             ]);
 
+            // Créer la réservation qui lie le spectateur au tour
             Reservation::create([
                 'spectateur_id' => $spectateur->id,
                 'tour_id'       => $personne['tour_id'],
             ]);
 
-            // On stocke les infos pour le récap
+            // Stocker les infos pour afficher le récapitulatif
             $reservations[] = [
                 'spectateur' => $spectateur,
                 'tour' => Tour::with(['sport', 'lieu'])->find($personne['tour_id']),
             ];
         }
 
-        // Vider le panier
+        // Vider le panier après confirmation
         session()->forget('panier');
 
-        // Passer le récap à la page de confirmation
+        // Rediriger vers la page de confirmation avec le récapitulatif
         return redirect('/confirmation')->with([
-            'success' => '🎉 Réservation confirmée !',
+            'success' => 'Réservation confirmée !',
             'recap' => [
                 'prenom'       => $request->prenom,
                 'nom'          => $request->nom,
@@ -84,7 +88,7 @@ class ReservationController extends Controller
         ]);
     }
 
-     // Page de confirmation
+    // Afficher la page de confirmation
     public function confirmation()
     {
         return view('reservation.confirmation');

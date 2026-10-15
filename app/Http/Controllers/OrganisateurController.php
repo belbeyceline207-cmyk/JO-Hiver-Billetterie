@@ -86,11 +86,22 @@ class OrganisateurController extends Controller
         return redirect('/organisateur/competitions/liste')->with('success', 'Compétition supprimée !');
     }
 
-    // Afficher toutes les réservations
-    public function reservations()
+    // Affiche toutes les réservations avec option de recherche
+    public function reservations(Request $request)
     {
-        // Récupèrer les réservations avec les infos du spectateur et du tour
-        $reservations = Reservation::with(['spectateur', 'tour.sport', 'tour.lieu'])->get();
+        $query = Reservation::with(['spectateur', 'tour.sport', 'tour.lieu']);
+
+        // Si un nom ou email est saisi dans la recherche
+        if ($request->search) {
+            $search = $request->search ;
+            $query->whereHas('spectateur', function($q) use ($search) {
+                $q->where('nom', 'like', '%' . $search . '%')
+                ->orWhere('prenom', 'like', '%' . $search . '%')
+                ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        $reservations = $query->get();
         return view('organisateur.reservations', compact('reservations'));
     }
 

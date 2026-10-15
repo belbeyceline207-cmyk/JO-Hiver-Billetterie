@@ -2,7 +2,6 @@
 
 @section('content')
 
-    {{-- Bouton retour vers le dashboard --}}
     <a href="/organisateur" class="btn btn-secondary mb-4">
         <i class="bi bi-arrow-left"></i> Retour
     </a>
@@ -10,6 +9,32 @@
     <h1 class="mb-4">
         <i class="bi bi-ticket-perforated"></i> Toutes les réservations
     </h1>
+
+    {{-- Formulaire de recherche --}}
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="GET" action="/organisateur/reservations">
+                <div class="row g-2 align-items-center">
+                    <div class="col-auto">
+                        <label class="form-label mb-0">Rechercher un spectateur :</label>
+                    </div>
+                    <div class="col-auto">
+                        <input type="text" name="search" class="form-control" placeholder="Nom, prénom ou email..." value="{{ request('search') }}">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-search"></i> Rechercher
+                        </button>
+                    </div>
+                    <div class="col-auto">
+                        <a href="/organisateur/reservations" class="btn btn-secondary">
+                            <i class="bi bi-arrow-counterclockwise"></i> Réinitialiser
+                        </a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <div class="card shadow-sm">
         <div class="card-body">
@@ -26,16 +51,13 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {{-- @forelse affiche les réservations ou un message si vide --}}
                     @forelse($reservations as $reservation)
                         <tr>
-                            {{-- Nom complet du spectateur --}}
                             <td>{{ $reservation->spectateur->prenom }} {{ $reservation->spectateur->nom }}</td>
                             <td>{{ $reservation->spectateur->email }}</td>
                             <td>{{ $reservation->spectateur->telephone }}</td>
                             <td>{{ $reservation->tour->sport->nom }}</td>
                             <td>
-                                {{-- Badge rouge pour finale, jaune pour qualifications --}}
                                 <span class="badge {{ $reservation->tour->type == 'finale' ? 'bg-danger' : 'bg-warning text-dark' }}">
                                     {{ ucfirst($reservation->tour->type) }}
                                 </span>
@@ -44,10 +66,9 @@
                             <td>{{ $reservation->tour->lieu->nom }}</td>
                         </tr>
                     @empty
-                        {{-- Message si aucune réservation en base --}}
                         <tr>
                             <td colspan="7" class="text-center">
-                                <i class="bi bi-inbox"></i> Aucune réservation pour le moment.
+                                <i class="bi bi-inbox"></i> Aucune réservation trouvée.
                             </td>
                         </tr>
                     @endforelse
